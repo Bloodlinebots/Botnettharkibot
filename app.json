@@ -1,0 +1,21 @@
+{
+  "name": "Telegram Video Vault Bot",
+  "description": "Telegram bot that shares videos with MongoDB",
+  "repository": "https://github.com/yourusername/your-repo-name",
+  "keywords": ["telegram", "bot", "mongo", "video"],
+  "env": {
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Your bot's API token from @BotFather",
+      "required": true
+    },
+    "MONGO_URI": {
+      "description": "MongoDB connection URI (use MongoDB Atlas or other host)",
+      "required": true
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
