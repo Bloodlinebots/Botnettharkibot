@@ -1,0 +1,4 @@
+python-telegram-bot==20.6
+pymongo[srv]==4.6.1
+dnspython==2.4.2
+motor==3.3.1
