@@ -20,14 +20,14 @@ MONGO_URI = os.getenv("MONGO_URI") or "mongodb://localhost:27017"
 client = AsyncIOMotorClient(MONGO_URI)
 db = client["telegram_bot"]
 
-VAULT_CHANNEL_ID = -1002564608005
-LOG_CHANNEL_ID = -1002624785490
+VAULT_CHANNEL_ID = -1002710213590
+LOG_CHANNEL_ID = -1002767911705
 FORCE_JOIN_CHANNEL = "bot_backup"
-ADMIN_USER_ID = 7755789304
-DEVELOPER_LINK = "https://t.me/unbornvillian"
+ADMIN_USER_ID = 1209978813
+DEVELOPER_LINK = "https://t.me/GODCHEATOFFICIAL"
 SUPPORT_LINK = "https://t.me/botmine_tech"
 TERMS_LINK = "https://t.me/bot_backup/7"
-WELCOME_IMAGE = "https://files.catbox.moe/19j4mc.jpg"
+WELCOME_IMAGE = "https://files.catbox.moe/fxsuba.jpg"
 
 COOLDOWN = 5
 cooldowns = {}
