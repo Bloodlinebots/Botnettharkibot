@@ -3,9 +3,7 @@ import asyncio
 import json
 import zipfile
 import io
-from telegram import (
-    Update, InlineKeyboardButton, InlineKeyboardMarkup
-)
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, CallbackQueryHandler,
     MessageHandler, ContextTypes, filters
@@ -22,23 +20,19 @@ db = client["telegram_bot"]
 
 VAULT_CHANNEL_ID = -1002710213590
 LOG_CHANNEL_ID = -1002767911705
-FORCE_JOIN_CHANNEL = "bot_backup"
+FORCE_JOIN_CHANNEL = "nude_cloth_remove_free"
 ADMIN_USER_ID = 1209978813
 DEVELOPER_LINK = "https://t.me/GODCHEATOFFICIAL"
-SUPPORT_LINK = "https://t.me/botmine_tech"
+SUPPORT_LINK = "https://t.me/nude_cloth_remove_free"
 TERMS_LINK = "https://t.me/bot_backup/7"
 WELCOME_IMAGE = "https://files.catbox.moe/fxsuba.jpg"
 
 COOLDOWN = 5
 cooldowns = {}
-
 USERS_JSON_FILE = "users.json"
-
-# For sudo users
 sudo_users = set()
 
 # ---------- HELPERS ----------
-
 def is_admin(uid):
     return uid == ADMIN_USER_ID
 
@@ -68,7 +62,6 @@ async def delete_after_delay(bot, chat_id, message_id, delay):
         pass
 
 # ---------- HANDLERS ----------
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
 
@@ -76,7 +69,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("🛑 You are banned from using this bot.")
         return
 
-    # Force join channel check
     try:
         member = await context.bot.get_chat_member(f"@{FORCE_JOIN_CHANNEL}", uid)
         if member.status in ["left", "kicked"]:
@@ -84,8 +76,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 [InlineKeyboardButton("Join Channel", url=f"https://t.me/{FORCE_JOIN_CHANNEL}")]
             ])
             await update.message.reply_text(
-                "🛑 You must join our channel to use this bot.\n\n"
-                "✅ After joining, use /start",
+                "🛑 You must join our channel to use this bot.\n\n✅ After joining, use /start",
                 reply_markup=btn,
             )
             return
@@ -100,19 +91,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             pass
 
-    # Save user to MongoDB users collection
     await db.users.update_one({"_id": uid}, {"$set": {"_id": uid}}, upsert=True)
-    # Save user in JSON
     await save_user_to_json(uid)
 
-    # Handle referral if valid
     if referrer_id and referrer_id != uid:
         already_referred = await db.referrals.find_one({"referral": uid})
         if not already_referred:
             await db.referrals.insert_one({"referrer": referrer_id, "referral": uid})
             count = await db.referrals.count_documents({"referrer": referrer_id})
             if count == 1:
-                # Notify referrer about unlock
                 try:
                     await context.bot.send_message(
                         referrer_id,
@@ -177,7 +164,6 @@ async def callback_get_video(update: Update, context: ContextTypes.DEFAULT_TYPE)
             return
         cooldowns[uid] = now + COOLDOWN
 
-    # Check referral count
     referral_count = await db.referrals.count_documents({"referrer": uid})
     if referral_count < 1:
         bot_username = (await context.bot.get_me()).username
@@ -188,10 +174,7 @@ async def callback_get_video(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return
 
-    # User can get video
-    video_doc = await db.videos.aggregate([
-        {"$sample": {"size": 1}}
-    ]).to_list(1)
+    video_doc = await db.videos.aggregate([{"$sample": {"size": 1}}]).to_list(1)
 
     if not video_doc:
         await query.message.reply_text("⚠️ No videos available.")
@@ -206,7 +189,6 @@ async def callback_get_video(update: Update, context: ContextTypes.DEFAULT_TYPE)
             message_id=msg_id,
             protect_content=True,
         )
-
         context.application.create_task(
             delete_after_delay(context.bot, uid, sent.message_id, 10800)
         )
@@ -231,34 +213,25 @@ async def callback_get_video(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except Exception as e:
         await query.message.reply_text(f"⚠️ Unknown error occurred: {e}")
 
-# Show privacy and help info
 async def show_privacy_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    text = (
+    await query.message.edit_text(
         "This bot forwards videos from a private channel.\n"
         "You must refer 1 user to unlock videos.\n"
         "Please follow the terms and conditions."
     )
-    await query.message.edit_text(text)
 
 async def privacy_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
+    await update.message.reply_text(
         "Privacy policy: This bot does not store your data except user IDs and referrals.\n"
         "All data is kept securely."
     )
-    await update.message.reply_text(text)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "Help:\n"
-        "/start - Start bot\n"
-        "Use the buttons to get videos.\n"
-        "Refer 1 user to unlock videos."
+    await update.message.reply_text(
+        "Help:\n/start - Start bot\nUse the buttons to get videos.\nRefer 1 user to unlock videos."
     )
-    await update.message.reply_text(text)
-
-# Admin commands
 
 async def add_sudo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_admin(update.effective_user.id):
@@ -336,46 +309,45 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     total_users = await db.users.count_documents({})
     total_videos = await db.videos.count_documents({})
     total_banned = await db.banned.count_documents({})
-    text = (
-        f"📊 Stats:\n"
-        f"Users: {total_users}\n"
-        f"Videos: {total_videos}\n"
-        f"Banned: {total_banned}"
+    await update.message.reply_text(
+        f"📊 Stats:\nUsers: {total_users}\nVideos: {total_videos}\nBanned: {total_banned}"
     )
-    await update.message.reply_text(text)
 
+# ✅ FINAL FIXED AUTO-UPLOAD
 async def auto_upload(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     if not is_sudo(uid):
         return
+
     msg = update.message
     if msg.video:
         try:
-            await db.videos.update_one(
-                {"msg_id": msg.message_id},
-                {"$set": {"msg_id": msg.message_id}},
-                upsert=True,
+            sent = await context.bot.copy_message(
+                chat_id=VAULT_CHANNEL_ID,
+                from_chat_id=msg.chat_id,
+                message_id=msg.message_id
             )
-            await msg.reply_text("✅ Video added to vault.")
+            await db.videos.update_one(
+                {"msg_id": sent.message_id},
+                {"$set": {"msg_id": sent.message_id}},
+                upsert=True
+            )
+            await msg.reply_text("✅ Video successfully uploaded to vault and saved.")
         except Exception as e:
-            await msg.reply_text(f"Error: {e}")
+            await msg.reply_text(f"❌ Upload failed: {e}")
 
 async def export_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_USER_ID:
         return
-
     if not os.path.exists(USERS_JSON_FILE):
         await update.message.reply_text("⚠️ Users file not found.")
         return
-
     with open(USERS_JSON_FILE, "rb") as f:
         data = f.read()
-
     bio = io.BytesIO()
     with zipfile.ZipFile(bio, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("users.json", data)
     bio.seek(0)
-
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
         document=bio,
@@ -384,17 +356,13 @@ async def export_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # ---------- MAIN ----------
-
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
-
-    # Command handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(callback_get_video, pattern="get_video"))
     app.add_handler(CallbackQueryHandler(show_privacy_info, pattern="show_privacy_info"))
     app.add_handler(CommandHandler("privacy", privacy_command))
     app.add_handler(CommandHandler("help", help_command))
-
     app.add_handler(CommandHandler("addsudo", add_sudo))
     app.add_handler(CommandHandler("remsudo", remove_sudo))
     app.add_handler(CommandHandler("ban", ban_user))
@@ -402,7 +370,6 @@ def main():
     app.add_handler(CommandHandler("broadcast", broadcast))
     app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("export_users", export_users))
-
     app.add_handler(MessageHandler(filters.VIDEO, auto_upload))
 
     print("Bot started...")
