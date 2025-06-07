@@ -24,7 +24,7 @@ FORCE_JOIN_CHANNEL = "nude_cloth_remove_free"
 ADMIN_USER_ID = 1209978813
 DEVELOPER_LINK = "https://t.me/GODCHEATOFFICIAL"
 SUPPORT_LINK = "https://t.me/nude_cloth_remove_free"
-TERMS_LINK = "https://t.me/bot_backup/7"
+TERMS_LINK = "https://t.me/nude_cloth_remove_free/11"
 WELCOME_IMAGE = "https://files.catbox.moe/fxsuba.jpg"
 
 COOLDOWN = 5
